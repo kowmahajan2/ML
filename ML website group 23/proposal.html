@@ -1,0 +1,108 @@
+<html>
+    <head>
+        <link href="mystyle.css" rel="stylesheet" type="text/css" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    </head>
+    
+    <body style="color:white; background-color:#181c20">
+        <div class="container">     
+            
+            <h2> Proposal Statement: </h2> 
+<hr />
+<p style="color:white;"><a href="index.html"> Home</a>        <a href="karan.html"> Project Milestone</a></p>
+<hr />
+
+            <h2> Current Approaches to Procedural Generation </h2> 
+            <p align="justify">
+                There are a variety of games that rely heavily on procedural generation.
+                Games like Minecraft and No Man’s Sky use finely tuned randomization algorithms to create non-repeating environments that still follow 
+                basic game structure. This provides the users with an essentially infinite canvas to play the game on.<br>
+                <center><img src="minecraft terrain.png" alt="Randomly generated minecraft terrain" style="width:70%;height:auto;"></center><br>
+                <center><img src="glitch.png" alt="random generation can have glitches" style="width:70%;height:auto;"></center><br>
+		</p>
+	   <p align="justify">
+                Dungeon crawlers use similar randomisations to create very simple, usually symmetric and linear dungeon structures to keep the player engaged for long periods.
+                More complex games, however, such as games with non-linear structures, like DOOM, Portal, Mario, most roguelikes,  which allow players more 
+                options in terms of gameplay and involve problem-solving require hand-crafted levels as randomised generation can produce either repetitive 
+                and eventually boring levels or they may produce levels that are bizarre and unplayable.
+
+            </p><br>
+            <h2> Previous attempts at PCGML </h2> 
+            <p align="justify">
+                Other projects have tried to implement machine learning to create new levels for games like Mario and DOOM. These projects have relied on 
+                Generative Adversarial networks which have been shown to be successful at recreating convincing new versions of pre-existing data points.<br>
+
+                The results of a well-implemented GANs system should be virtually indistinguishable from human-generated versions. So, training GAN’s on a 
+                set of hand-crafted levels should be capable of producing new levels that resemble human-generated ones.
+            </p><br>
+            
+            <h3> Datasets </h3> 
+            <p align="justify">
+                Games already have a decent number of levels that come with vanilla versions. However, this training data may not be enough or it may  not 
+                be exhaustive in terms of what is possible to create. Luckily there is a healthy number of games that allow community participation and make 
+                level creation tools available. Such games have a significantly larger amount of data available made by players around the world.<br>
+                The main difficulty then is, how do we encode this level data in such a way that it could be input into an ML algorithm.
+            </p><br>
+            <h3>Screen Capture</h3>
+            <p align="justify">
+                For simple tile-based 2D games, the simplest way is to take a screen capture and write a program that reads the values of each tile and then 
+                input that into a text file that would be suitable for the algorithm.</p> <br>
+                <center><img src="tagged mario.jpg" alt="labelled mario tiles" style="width:70%;height:auto;"></center><br>
+                <p align="justify">
+                    This method isn’t possible for 3D games. 3D levels are harder to encode, one approach can be to split the level in different parts like the floor map, height map, entity map etc. evolve each of those separately and then combine to create the final level.
+                
+		<center><img src="doom1.png" alt="Inside a Doom 1 level" style="width:70%;height:auto;"></center>
+
+
+            </p><br>
+
+            <h2>Our Approach and Proposed Timeline</h2>
+            <h3>The Game</h3>
+            <p align="justify">
+                We plan on implementing PCGML(Procedural Content Generation using Machine Learning) in the game Portal 2. The game is a challenging 3D 
+                puzzle-solving game with very simple mechanics. To complete a level the player needs to escape the testing chamber, the exit is controlled by buttons 
+                present in the chamber, the player has to use the portal gun and the environment to press all the required buttons to open the door. The level 
+                complexity range is quite large, levels rely on the geometry of the room and the entities placed in it.<br>
+                <center><img src="Portalinlevel.png" alt="Inside a portal level" style="width:70%;height:auto;"></center></p><br>
+
+                <p align="justify">
+                The game has a story mode where the levels are made by the game devs, these are handcrafted and often contain artistic elements that might be 
+                too complex to encode. The game, however, also has a mode called the “Perpetual Testing Initiative” the point of which is to expand the number of 
+                testing chambers by allowing players to create new ones, so that the testing can go on infinitely. The components of these chambers are all 
+                standardized and can be encoded into usable data.<br>
+                <center><img src="Portal level creator.png" alt="level editor in Portal" style="width:70%;height:auto;"></center></p><br>
+                <p align="justify">
+                These characteristics make this game ripe for the implementation of PCGML both technically and thematically.
+
+
+            </p><br>
+            <h3>Encoding</h3>
+            <p align="justify">
+                The game has a custom made and free level editor where we can edit every detail of the level. The goal is to create a translational layer to 
+                extract the position and orientation of all entities along with any accompanying properties they might have. The creation of this translational 
+                layer might be very complex depending upon how the level files store this information.
+            </p><br>
+            
+            <h3>Proposed Timeline</h3>
+            
+            <ul>
+               <li>Week 03 & 04: Literature study and beginning work on the translational layer.</li> 
+               <li>Week 05: Finish writing the translation layer to convert level files to a readable format.</li> 
+               <li>Week 06: Downloading and converting a large number of levels from the steam workshop. </li> 
+               <li>Week 07 & beyond: Learning and implementing GAN’s on the given data.</li><br> 
+               
+            </ul>
+            
+	    <h2>References:</h2>
+            
+            <ol>
+               <li> Volz et. al., “Evolving Mario Levels in the Latent Space of a Deep Convolutional Generative Adversarial Network”, in Proceedings of the Genetic and Evolutionary Computation Conference, pp. 221-228 (2018)</li><br> 
+               <li> Giacomello et. al., “DOOM Level Generation using Generative Adversarial Networks”, 2018 IEEE Games, Entertainment, Media Conference (GEM), pp. 316-323, (2018)</li><br>
+	       <li> Irfan et. al., “Evolving Levels for General Games Using Deep Convolutional Generative Adversarial Networks”, in 11th Computer Science and Electronic Engineering (CEEC), pp. 96-101 (2019)</li><br> 
+	       <li> Juraska et. al., “ViGGO: A Video Game Corpus for Data-To-Text Generation in Open-Domain Conversation”, in Proceedings of the 12th International Conference on Natural Language Generation, pp. 164-172, (2019)</li><br>
+            </ol>
+            
+        </div>
+    </body>
+    
+    </html>

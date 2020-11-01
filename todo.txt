@@ -1,5 +1,7 @@
 1. we need to create a dictionary of all the different item types and other different types of things
-, to convert from a text type to some number
+, to convert from a text type to some number.
+ we will probably need 1 hot representation of some sort
+
 
 2. This needs to be tidied up with a final level class with the item, connection and voxel array
 
