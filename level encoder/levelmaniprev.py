@@ -1,6 +1,7 @@
 import copy
 import numpy as np
 import pandas as pd
+import csv
 
 
 class Item:
@@ -80,7 +81,7 @@ class Voxel:
         for i in self.itemList:
             if(i.properties[1][1] == "ITEM_ENTRY_DOOR"):
                 self.oneHotItem = [0,1,0,0,0,0]
-            elif(i.properties[1][1] == "IITEM_EXIT_DOOR"):
+            elif(i.properties[1][1] == "ITEM_EXIT_DOOR"):
                 self.oneHotItem = [0,0,1,0,0,0]
             elif(i.properties[1][1] == "ITEM_CUBE"):
                 self.oneHotItem = [0,0,0,1,0,0]
@@ -460,14 +461,21 @@ class Level:
 
 data = []
 
-for k in range(0,11):
+for k in range(0,26):
     print(k)
-    name = str(k + 1) + ".p2c"
+    name = "level (" +str(k + 1) + ").p2c"
     newLevel = Level()
     newLevel.LevelRead(name)
     newLevel.developOneHot()
     Z = newLevel.makeCSVarray()
     data.append(Z)
+    data.append(np.rot90(Z,1,(1,2)))
+    data.append(np.rot90(Z,2,(1,2)))
+    data.append(np.rot90(Z,3,(1,2)))
+    data.append(np.flip(Z,1))
+    data.append(np.rot90(np.flip(Z,1),1,(1,2)))
+    data.append(np.rot90(np.flip(Z,1),2,(1,2)))
+    data.append(np.rot90(np.flip(Z,1),3,(1,2)))
     del newLevel
 
 print(np.shape(data))
@@ -475,9 +483,7 @@ print(np.shape(data))
 
 df = pd.DataFrame(data)
 
-df.to_csv('Data.csv')
-
-
+df.to_csv('Data.csv',header = False, index = False)
 
 
 
