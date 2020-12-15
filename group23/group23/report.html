@@ -150,334 +150,42 @@ code2 {
 	<img src="testfile7.jpg" alt="Reference architecture taken from the mario DCGANs paper" style="width:70%;height:auto;">
 	<figcaption> 308 data points, batches of 10, 3 layer network, 40 epochs.</figcaption>
 </center>
+<p align="justify">
+	This last level is the most interesting level so far. The level created two separate chambers connected by a small passage. Such a structure could make for a very interesting puzzle design. There is actually a level in 
+	the training set set that has a similar characteristic.
+</p>
+<center>
+	<img src="similar chamber.jpg" alt="Reference architecture taken from the mario DCGANs paper" style="width:70%;height:auto;">
+	<figcaption> A level with two separate chambers and a passage between them.</figcaption>
+</center>
+<p align="justify">
+	But the orientation of the level, the size of the chambers and the location of the passage is very different. Which means that the algorithm is capable of producing some good results but in it's current state the number
+	 of bad noisy results is much greater than good results.
+</p>
 
-<h2>Procedural Generation</h2> 
-	<p align="justify">
-		Procedural Generation is used to create data  using computer algorithms (Randomization, Machine learning etc) instead of creating it manually. It is often used in some open environment simulations and games.
-		Using this method, one can produce seemingly infinitely large environments which would have been inpossible otherwise. There are many such use cases where randomzation algorithms have been used in past but due to complications in further advanced games using randomization algorithms is not very realistic. 
-		So, one can turn to Procedural Generation of Content using Machine Learning (PCGML) to create more realistic environments. Using DCGANs, it is theoretically possible to generate such virtual environments which are indistinguishable from human-made environments.<br><br>
-		In our project, we have focused on creating new levels for the 'Portal 2' game using PCGML with DCGAN.      
-	</p>
-<h2>Generating 'Portal 2' levels using PCGML</h2>
-	<p align="justify">
-		In this project, we have made some good progress on implementing PCGML in the game Portal 2 and have created some new levels. In our model we have generated level geometry 16*16*16 (max size). We also have 5 distinct level items per level. Namely, Entry Door, Exit Door, Box Dispenser, Buttons and Box. 
-		We have not implemented 'connections' between the 'Buttons' and the 'Exit Door' and 'Box Dispenser' in our current model. We have initially proposed two models for these connections, a) Using a simple connection vector and b) Adding a fourth dimension. The first method is not implementable in its current form because it would not allow for a simple forward flow DCGAN. 
-		In the second method, adding a new dimension would increase the input data size drastically which is not feasible given the current hardwere limitations. So, at this stage, we are only focused on generating realistic geometry and item placement.  
-	</p>
-	<h3> Model Architecture</h3>
-	<p align="justify">
-		Our model architecture is based on the paper [1] by Volz et al. titled "Evolving Mario Levels in the Latent Space of a Deep Convolutional Generative Adversarial Network". Our model has only two 3D Convolusion Layers in the Discriminator and two similar Transpose Layers in the Generator. 
-		We shrunk our model to only two layers per network to reduce the total size of the initial model.    	
-	</p>
-	<h3>Dataset</h3>
-	<p align="justify">
-		Initially we assumed that we can use thousands of community made models to train our neural net. But unfortunately, the community levels are only availble in '.vmf' format whcich is not readable by our network. The network can pnly read the games own '.p2c' format. Also, it is virtually impossible to convert files from '.vmf' to '.p2c'. So we had to hand create the initial training data.
-		We created 35 levels initially and then using certain symmmetry operations on the dataset we created about 250 levels from those initial levels. We have trained our model in this dataset only. 
-	
-	<h3> Model Implementation</h3>
-		<p align="justify">
-			Now we will discuss the method for implementing our model and the code used.<br><br>
-			<b>Level Encoder:</b> First we define a class for all the items in the game level.
-		</p>
-	<pre>
-	<code>
-	class Item:
+<h2>Current problems</h2>
+<h3>Buggy Item Placement</h3>
+<p align="justify">
+	The item placement to create the actual puzzle is very flawed. Items appear inside solid walls, there are multiple entry and exit doors. The hope was that the algorithm will be able to learn that each level has only one entry door
+	which must be placed on a flat wall. None of the versions of the algorithm produced sensible item placement, this was a concern in the Mario DCGAN paper as well. The powerups in a mario level are rare and very scattered and are almost
+	 seen as outliers by the algorithm. To get around this issue a convolution was applied to all such elements of the game, to improve their significance during training. This solution can be explored in this case aswell.<br>
+	 Another suggestion is to divide the level generation into 3 parts.
+	 <ol>
+		 <li>Geometry generation</li>
+		 <li>Item placement</li>
+		 <li>Connections</li>
+	 </ol>
+</p>
+<h3>Lack of Data</h3>
+<p align="justify">
+	The lack of data points is an obvious problem. We attempted to solve this by reaching out to the community and asking for some level files. But, as we should have expected, for a 9 year old game, the community is not very active and
+	the response was very underwhelming.
+</p>
 
-		properties = []
-	
-		def __init__(self, proplist):
-			self.properties = proplist
-	
-		def developProps(self):
-			self.index = int(self.properties[0][1])
-
-			self.voxelPos = []
-        		cut = self.properties[3][1].find(" ")
-        		i = 0
-       			self.voxelPos.append(int(self.properties[3][1][i:cut]))
-       			i = cut
-        		cut = self.properties[3][1].find(" ", cut + 1)
-        		self.voxelPos.append(int(self.properties[3][1][i:cut]))
-        		self.voxelPos.append(int(self.properties[3][1][cut+1:]))
-
-        		self.angles = []
-       			cut = self.properties[5][1].find(" ")
-       			i = 0
-        		self.angles.append(int(self.properties[5][1][i:cut]))
-        		i = cut
-        		cut = self.properties[5][1].find(" ", cut + 1)
-        		self.angles.append(int(self.properties[5][1][i:cut]))
-        		self.angles.append(int(self.properties[5][1][cut+1:]))
-	</code>
-	</pre>
-	<p align="justify">
-		Then we define a class for all the connections. 
-	</p>
-	<pre>
-	<code>
-	class Connection:
-
-		def __init__(self, proplist):
-			self.properties = proplist
-    
-		def printprops(self):
-			print(self.properties)
-	</code>
-	</pre>	
-	<p align="justify">
-		After that, we create a class for the 3D Voxels. Each voxel contains the information about a spesific point in the 3D space inside the game level.  
-	</p>		
-	<pre>
-	<code>
-	class Voxel:
-
-		def __init__(self, solid, portal0, portal1, portal2):
-			self.solid = solid
-        		self.portal0 = portal0
-        		self.portal1 = portal1
-        		self.portal2 = portal2
-        		self.itemList = []
-        		self.oneHotItem = []
-    
-		def setSolid(self, solid):
-        		self.solid = solid
-    
-		def setPortal0(self, portal0):
-        		self.portal0 = portal0
-
-		def setPortal1(self, portal1):
-        		self.portal1 = portal1
-
-		def setPortal2(self, portal2):
-        		self.portal2 = portal2
-    
-		def addItem(self,newItem):
-        		self.itemList.append(newItem)
-
-		def printVoxel(self):
-        		print(self.solid)
-    
-		def enterVoxel(self):
-        		ret = [self.solid, self.portal0, self.portal1, self.portal2] + self.oneHotItem
-        		return ret
-    
-		def makeOneHot(self):
-        		self.oneHotItem = [1,0,0,0,0,0]
-        		for i in self.itemList:
-            			if(i.properties[1][1] == "ITEM_ENTRY_DOOR"):
-                			self.oneHotItem = [0,1,0,0,0,0]
-            			elif(i.properties[1][1] == "IITEM_EXIT_DOOR"):
-                			self.oneHotItem = [0,0,1,0,0,0]
-            			elif(i.properties[1][1] == "ITEM_CUBE"):
-                			self.oneHotItem = [0,0,0,1,0,0]
-            			elif(i.properties[1][1] == "ITEM_DROPPER_CUBE"):
-                			self.oneHotItem = [0,0,0,0,1,0]
-            			elif(i.properties[1][1] == "ITEM_BUTTON_FLOOR"):
-                			self.oneHotItem = [0,0,0,0,0,1]
-	</code>
-	</pre>
-	<p align="justify">
-		Now we write a code to generate more levels from the hand-made levels by using a few symmetry operations. 
-		After that we save the information from all such levels into a n-dimensional array into a CSV file. 
-	</p>
-	<pre>
-	<code>
-	data = []
-
-	for k in range(0,11):
-    		print(k)
-    		name = str(k + 1) + ".p2c"
-    		newLevel = Level()
-    		newLevel.LevelRead(name)
-    		newLevel.developOneHot()
-   		Z = newLevel.makeCSVarray()
-    		data.append(Z)
-    		del newLevel
-
-	print(np.shape(data))
-
-	df = pd.DataFrame(data)
-
-	df.to_csv('Data.csv')
- 	</code>
-	</pre>
-	
-	<p align="justify">
-		We train our model in this dataset.<br><br>
-		<b>Training the DCGAN:</b> We are using keras in TensorFlow to make the model. First we make the Discriminator Model. 
-	</p>
-	<pre>
-	<code>
-	discriminator = keras.Sequential(
-    		[
-        		keras.Input(shape=(16, 16, 16, 10)), 
-       			layers.Conv3D(32, (3, 3, 3), strides=(2, 2, 2), padding="same"),
-        		layers.LeakyReLU(alpha=0.2),
-        		layers.Conv3D(64, (3, 3, 3), strides=(2, 2, 2), padding="same"),
-        		layers.LeakyReLU(alpha=0.2),
-        		layers.GlobalMaxPooling3D(),
-        		layers.Dense(1),
-    		],
-    		name="discriminator",
-	)
-
-	discriminator.summary()
- 	</code>
-	</pre>
-	<pre>
-	<code2>
-	Layer (type)                 Output Shape              Param #   
-	=================================================================
-	conv3d_3 (Conv3D)            (None, 10, 10, 10, 16)    4336      
-	_________________________________________________________________
-	leaky_re_lu_15 (LeakyReLU)   (None, 10, 10, 10, 16)    0         
-	_________________________________________________________________
-	conv3d_4 (Conv3D)            (None, 5, 5, 5, 32)       13856     
-	_________________________________________________________________
-	leaky_re_lu_16 (LeakyReLU)   (None, 5, 5, 5, 32)       0         
-	_________________________________________________________________
-	conv3d_5 (Conv3D)            (None, 3, 3, 3, 64)       55360     
-	_________________________________________________________________
-	leaky_re_lu_17 (LeakyReLU)   (None, 3, 3, 3, 64)       0         
-	_________________________________________________________________
-	global_max_pooling3d_1 (Glob (None, 64)                0         
-	_________________________________________________________________
-	dense_5 (Dense)              (None, 1)                 65        
-	=================================================================
-	Total params: 73,617
-	Trainable params: 73,617
-	Non-trainable params: 0
-	_________________________________________________________________
-	</code2>
-	</pre>
-	
-	<p align="justify">
-		Now we create the Generator Model by replacing the 'Conv2D' layer with 'Conv2DTranspose' layer and mimicking the rest of the network.  
-	</p>
-	<pre>
-	<code>
-	generator = keras.Sequential(
-    		[
-        		keras.Input(shape=(latent_dim,)),
-        		layers.Dense(4* 4 * 4 * 64),
-       			layers.LeakyReLU(alpha=0.2),
-        		layers.Reshape((4, 4, 4, 64)),
-        		layers.Conv3DTranspose(32, (4, 4, 4), strides=(2, 2, 2), padding="same"),
-        		layers.LeakyReLU(alpha=0.2),
-        		layers.Conv3DTranspose(10, (4, 4, 4), strides=(2, 2, 2), padding="same"),
-    		],
-    		name="generator",
-		)
-
-		generator.summary()
- 	</code>
-	</pre>
-	<pre>
-	<code2>
-	Model: "generator"
-	Layer (type)                 Output Shape              Param #   
-	=================================================================
-	dense_6 (Dense)              (None, 1728)              222912    
-	_________________________________________________________________
-	leaky_re_lu_18 (LeakyReLU)   (None, 1728)              0         
-	_________________________________________________________________
-	reshape_4 (Reshape)          (None, 3, 3, 3, 64)       0         
-	_________________________________________________________________
-	conv3d_transpose_12 (Conv3DT (None, 6, 6, 6, 32)       131104    
-	_________________________________________________________________
-	cropping3d_2 (Cropping3D)    (None, 5, 5, 5, 32)       0         
-	_________________________________________________________________
-	leaky_re_lu_19 (LeakyReLU)   (None, 5, 5, 5, 32)       0         
-	_________________________________________________________________
-	conv3d_transpose_13 (Conv3DT (None, 10, 10, 10, 16)    32784     
-	_________________________________________________________________
-	leaky_re_lu_20 (LeakyReLU)   (None, 10, 10, 10, 16)    0         
-	_________________________________________________________________
-	conv3d_transpose_14 (Conv3DT (None, 10, 10, 10, 10)    10250     
-	=================================================================
-	Total params: 397,050
-	Trainable params: 397,050
-	Non-trainable params: 0
-	_________________________________________________________________
-	</code2>
-	</pre>
-	<p align="justify">
-		Now we train the DCGAN
-	</p>
-	<pre>
-	<code>
-	epochs = 100
-
-	gan = GAN(discriminator=discriminator, generator=generator, latent_dim=latent_dim)
-	gan.compile(
-		d_optimizer=keras.optimizers.Adam(learning_rate=0.0003),
-		g_optimizer=keras.optimizers.Adam(learning_rate=0.0003),
-		loss_fn=keras.losses.BinaryCrossentropy(from_logits=True),
-		
-	)
-	
-	gan.fit(
-		dataset, epochs=epochs, callbacks=[GANMonitor(num_img=1, latent_dim=latent_dim)]
-	)
-
-	</code>
-	</pre>
-	<h2>Results</h3>
-		<center>
-			<img src="nonresult.png" alt="Non sensical results" style="width:70%;height:auto;">
-			<figcaption>Trained generator creating a level with 102 items.</figcaption>
-			</center>
-			<p align="justify">
-			The model currently is not well tuned at all, the model trained over 100 epochs produced results with lots of statistical deficiencies. The level contains 102 items
-			several of which are embedded within solid walls. Levels contain several entry doors and exit doors(there should be only one of each). So, even after 100 epochs and 
-			small amount of data, the model was not able to learn simple meta features of the level points to an underfit model that might be too simplistic for the problem.
-			</p>
-	<h2>Conclusion</h3>
-	<p align="justify">
-		The model that we have created ran quickly due to the smaller size of the network but in mostly produced nonsensical results. 
-		The generated levels that we are getting are not realistic. The root cause is the lack of input data. Since we have to create the entire dataset by hand,
-		Given some extra time we should be able to create a larger dataset and train the model more accurately. Another problem is that of excessive padding. 
-		The reference model [1] uses padding because their model accepts a input size of 32*32 but they only have 28*24 sized levels. hence there is a consistent 60% padding.
-		But our levels are not of fixed size, although most levels do not exceed 800 voxels. Which makes our problem with excessive padding even worse. 
-		Using more consistent level sizes or reducing padding should help with this issue.<br><br>  
-		Our next goals are the following:
-	<ol>
-		<li>Creating more hand-crafted levels for a larger input dataset.</li>	
-		<li>Reducing maximum level size and increasing model parameters by adding additional convolutionaal layers.</li>
-		<li>Adding up the 'connections' (requires much more computational power) and creating one completely playable level.</li>
-	</ol>  
-	</p>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+<h2>Conclusion</h2>
+<p align="justify">
+	As we saw, the project shows promise but there is still a very long way to go, the original scope of the project was far too great. As this project went along the problem was reduced to just producing interesting level geometry
+	in which a puzzle could be made.
+</p>
 
 </html>
