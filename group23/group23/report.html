@@ -65,10 +65,14 @@ code2 {
 		The discriminator and generator parts of the model mirror each others' structure. The Convolution layers create abstract representaions of the input layer that condense down to a binary value in the discriminator.
 		In the generator a similar series of transposed convolutions is used to take a 128 dimension latent vector and create a (10,10,10,10) output level.<br>
 		This model is updated from our milestone presentation.<br>
+		</p>
 		<h3>excessive padding</h3>
+		<p align="justify">
 		We have reduced level sizes from 16x16x16 to 10x10x10 to reduce padding, excessive padding can be an issue as it just parameter size without any extra information
 		with 16 cubic levels we had upto 80% padding for some levels. A 10 cubed limit on level size vastly reduces padding percentage.
+	</p>
 		<h3>Deeper Network</h3>
+		<p align="justify">
 		The network was made deeper to encourage better characteristics in generated level.
 		</p>
 		<img src="model diagram.png" alt="A DCGAN architecture with Generator and Discriminator" style="width:70%;height:auto;">
@@ -188,7 +192,7 @@ code2 {
 	in which a puzzle could be made.
 </p>
 <h2>Code</h2>
-<a style="color:white;"href="https://github.com/kowmahajan2/ML">How to Identify and Diagnose GAN Failure Modes</a>
+<a style="color:white;"href="https://github.com/kowmahajan2/ML">Link to the Github repository</a>
 
 
 <h2>References:</h2>
