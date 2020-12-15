@@ -42,15 +42,15 @@ code2 {
 		GAN architecture was first developed in 2014 in a paper titled "Generative Adversarial Networks" by Ian Goodfellow et al. A more structured approach called Deep Convolutional Generative Adversarial Network (DCGAN)
 		was later developed by Alec Radford et al. in 2015 in the paper titled "Unsupervised Representation Learning with Deep Convolutional Generative Adversarial Networks". The architecture is useful in exploring the latent
 		space of a distribution and produce novel example that lie in that same distribution. DCGANs have been very succesful in generative applications.<br>
-		Assuming that level structures also form a cohorent distribution in latent space, DCGANs should be able to approximate this distribution to create new levels.
-		This has been shown to work succefully on 2D examples like Mario. 	
+		Assuming that level structures also form a cohorent distribution in the latent space, DCGANs should be able to approximate this distribution to create new levels.
+		This has been shown to work succefully on 2D games like Mario. 	
 	</p>
 <h2>Data</h2>
 	<p align="justify">
 		The Portal 2 has a community workshop where players can upload mods, visual enhancements and new levels for the game. The workshop has a very large corpus of levels for the game. This is one of the reasons why this game
 		 was considered to be ideal for this project.<br>
-		 However, the translation of the levels available on the workshop to a usable form proved too difficult. Instead a new much smaller corpus was created by hand, to increase the effectivity of a smaller corpus, the dataset
-		  included rotations and reflections of the levels, resulting in 8 data points from 1 working level.<br>
+		 However, the translation of the levels available on the workshop to a usable form proved too difficult, instead a new, much smaller corpus was created by hand. To increase the effectiveness of a smaller corpus, the dataset
+		  included rotations and reflections of the levels, resulting in 8 data points for each working level in the corpus.<br>
 		  <img src="example level.jpg" alt="A DCGAN architecture with Generator and Discriminator" style="width:70%;height:auto;"><br>
 		  While the disadvantages of a smaller corpus are obvious, it lets us work on simple levels with homogenous size, making it easier for us to come up with a proof of concept.
 	</p>
@@ -68,12 +68,16 @@ code2 {
 		</p>
 		<h3>excessive padding</h3>
 		<p align="justify">
-		We have reduced level sizes from 16x16x16 to 10x10x10 to reduce padding, excessive padding can be an issue as it just parameter size without any extra information
+		We have reduced level sizes from 16x16x16 to 10x10x10 to reduce padding, excessive padding can be an issue as it just increases parameter size without any extra information
 		with 16 cubic levels we had upto 80% padding for some levels. A 10 cubed limit on level size vastly reduces padding percentage.
 	</p>
 		<h3>Deeper Network</h3>
 		<p align="justify">
 		The network was made deeper to encourage better characteristics in generated level.
+		</p>
+		<p align="justify">
+			Following the reference architecture, as we reduce the number of dimensions in the layer we increase the number of channels.
+	
 		</p>
 		<img src="model diagram.png" alt="A DCGAN architecture with Generator and Discriminator" style="width:70%;height:auto;">
 		<pre>
@@ -132,10 +136,7 @@ code2 {
 			_________________________________________________________________
 			</code2>
 				</pre>
-		<p align="justify">
-		Following the reference architecture as we reduce the number of dimensions in the layer we increase the number of channels.
-
-	</p>
+		
 	
 <h2>Results.</h2>
 <center>
