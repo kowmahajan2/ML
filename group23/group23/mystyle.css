@@ -1,0 +1,36 @@
+* {
+    margin-right: 5%;
+    margin-left: 5%;
+  }
+
+  h2 {
+      font-size : 30px;
+
+  }
+  h1 {
+    font-size : 40px;
+
+}
+
+h3 {
+    font-size : 20px;
+
+}
+
+p {
+    font-size : 20px;
+
+}
+ul {
+    font-size : 20px;
+
+}
+
+ol {
+    font-size : 20px;
+
+}
+
+*{
+    font-family : Helvetica, Charcoal, sans-serif;
+}
